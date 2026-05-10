@@ -16,14 +16,32 @@ README.md 파일만 사용합니다.
 
 ## GitHub 접근 규칙
 
-### MCP를 우선으로 사용
-- GitHub 관련 작업 (리포지토리 생성, 파일 업로드, PR 생성 등)은 **MCP(github-general)를 우선으로 사용**합니다.
-- SSH나 HTTP를 통한 직접 연결은 보조 수단으로만 사용합니다.
-- MCP 도구:
+### 작업 규모별 방식 선택
+
+#### MCP 사용 (토큰 효율적)
+- **작은 파일 변경**: < 5KB 파일 생성/수정
+- **단일 파일 변경**: 한 번에 1-2개 파일
+- **API 작업**: 리포지토리 생성, PR 생성, 이슈 관리
+- 도구:
   - `mcp__github-general__create_repository`: 리포지토리 생성
-  - `mcp__github-general__create_or_update_file`: 파일 생성/수정
+  - `mcp__github-general__create_or_update_file`: 파일 생성/수정 (< 5KB)
   - `mcp__github-general__create_pull_request`: PR 생성
-  - `mcp__github-general__push_files`: 다중 파일 업로드
+  - `mcp__github-general__push_files`: 소수 파일 업로드
+
+#### Bash + Git 사용 (토큰 절약)
+- **큰 파일 변경**: > 10KB 파일 수정
+- **대량 파일 변경**: 3개 이상 파일 동시 변경
+- **로컬 완성 후 일괄 푸시**: 복잡한 변경사항
+- 방식:
+  ```bash
+  git add .
+  git commit -m "type(scope): 메시지"
+  git push origin branch
+  ```
+
+### 토큰 절약 이유
+- MCP: 전체 파일 내용 전송 (100KB = ~25,000 토큰)
+- Bash: diff만 전송 (100KB 변경 = ~500 토큰) ← **50배 절약**
 
 ## Git Commit Rule
 
